@@ -1,0 +1,5 @@
+import { portfolio } from '@/content/portfolio';
+export function ProjectSections() {
+  const data = portfolio.projects;
+  return <div className="page-shell"><header className="page-heading"><p className="eyebrow">{data.pageLabel}</p><h1>{data.heading}</h1><p className="page-intro">{data.intro}</p></header>{data.groups.map(group => <section className="project-group" key={group.id} aria-labelledby={`${group.id}-title`}><div className="project-group-heading"><span>{group.number}</span><div><h2 id={`${group.id}-title`}>{group.title}</h2><p>{group.description}</p></div></div>{group.projects.map(project => <article className="project-row" key={project.id}><div className="project-art" role="img" aria-label={data.imageAlt}><span>{project.id.toUpperCase()} / IMAGE PLACEHOLDER</span></div><div><p className="project-type">{project.type}</p><h3>{project.title}</h3><p className="project-description">{project.description}</p></div><a className="project-link" href={project.href} target="_blank" rel="noreferrer">{data.linkLabel}<span aria-hidden="true"> ↗</span><span className="visually-hidden"> - {portfolio.common.externalLinkNote}</span></a></article>)}</section>)}</div>;
+}
