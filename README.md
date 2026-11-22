@@ -15,16 +15,16 @@ Open `http://localhost:3000`. `npm run build` creates the static export in `out/
 
 ## Replace placeholders
 
-Edit `content/portfolio.ts` for the name, role, intro/bio, project groups and links, skills, contact info, and visible navigation labels. Replace every bracketed value and the `example.com` project URLs. Replace `public/images/placeholder-project-1.svg` through `placeholder-project-4.svg`, or change their paths in the content file.
+Edit `content/portfolio.ts` for the name, role, intro/bio, project groups and links, skills, contact info, and visible navigation labels. Replace every bracketed value and the `example.com` project URLs. Project artwork is a clearly marked CSS geometric placeholder in `components/ProjectSections.tsx`; replace it with project images there when available.
 
 ## GitHub Pages
 
-`next.config.mjs` enables `output: 'export'` and `trailingSlash: true`. Repository Pages sites use `/<repository-name>/`; the base path applies to routes and static assets. Push to `main`, set **Settings > Pages > Source** to **GitHub Actions**, and use the included `.github/workflows/deploy-pages.yml`. It sets `NEXT_PUBLIC_BASE_PATH=/<repository-name>` for the build and deploys `out/`. For a user/organization root domain, use an empty base path. To export locally under a repo subpath, set `NEXT_PUBLIC_BASE_PATH=/your-repository-name` before `npm run build` (PowerShell: `$env:NEXT_PUBLIC_BASE_PATH='/your-repository-name'`). Next.js prefixes route links and `assetPath()` prefixes files in `public/`.
+`next.config.mjs` enables `output: 'export'` and `trailingSlash: true`. Repository Pages sites use `/<repository-name>/`; the base path applies to routes and static assets. The included `.github/workflows/deploy-pages.yml` exports the site with `NEXT_PUBLIC_BASE_PATH=/<repository-name>` and deploys `out/`. Set **Settings > Pages > Source** to **GitHub Actions**. For a user/organization root domain, use an empty base path. To export locally under a repo subpath, set `NEXT_PUBLIC_BASE_PATH=/your-repository-name` before `npm run build` (PowerShell: `$env:NEXT_PUBLIC_BASE_PATH='/your-repository-name'`).
 
 ## Vercel
 
 Import the repository in Vercel, keep the default Next.js build command (`next build` / `npm run build`), and leave `NEXT_PUBLIC_BASE_PATH` unset for a root-domain deployment. Static export remains enabled, so Vercel serves the exported pages; no server-only Next.js features are used.
 
-## Accessibility and speed
+## Accessibility and performance
 
-Text navigation, keyboard focus, a skip link, semantic headings, responsive layouts, and reduced-motion behavior are included. The 3D scene is lazy-loaded on home only and falls back when WebGL is unavailable, reduced motion is requested, or scene setup fails.
+Text navigation, keyboard focus, a skip link, semantic headings, responsive layouts, and reduced-motion behavior are included. One lazy-loaded canvas is used on the home route only. Drei's `Stars` and `Sparkles` keep the particle effect small and avoid a custom shader or particle system; low pixel ratio and disabled antialiasing limit GPU work. WebGL detection, reduced-motion preference, and a React error boundary all lead to the built-in 2D hero when needed.
