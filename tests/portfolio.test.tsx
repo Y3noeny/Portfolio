@@ -1,0 +1,20 @@
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { portfolio } from '@/content/portfolio';
+import { TwoDHero } from '@/components/TwoDHero';
+import { ProjectSections } from '@/components/ProjectSections';
+import { SiteNav } from '@/components/SiteNav';
+import { shouldUseScene } from '@/lib/hero-mode';
+import HomePage from '@/app/page';
+import ProjectsPage from '@/app/projects/page';
+import SkillsPage from '@/app/skills/page';
+import ContactPage from '@/app/contact/page';
+vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
+vi.mock('@/components/PinnedHero', () => ({ PinnedHero: () => <section aria-label="Home hero" /> }));
+describe('portfolio essentials', () => {
+  it('selects and renders the 2D fallback', () => { expect(shouldUseScene(false, false)).toBe(false); expect(shouldUseScene(true, true)).toBe(false); expect(shouldUseScene(true, false)).toBe(true); render(<TwoDHero />); expect(screen.getByRole('img', { name: portfolio.hero.fallbackLabel })).toBeInTheDocument(); });
+  it('renders project groups, descriptions, placeholder projects, and links', () => { render(<ProjectSections />); for (const group of portfolio.projects.groups) { const region = screen.getByRole('region', { name: group.title }); const project = group.projects[0]; expect(within(region).getByRole('heading', { name: project.title })).toBeInTheDocument(); expect(within(region).getByText(project.description)).toBeInTheDocument(); expect(within(region).getByRole('link', { name: new RegExp(portfolio.projects.linkLabel) })).toHaveAttribute('href', project.href); } });
+  it('supports keyboard navigation through text route links', async () => { const user = userEvent.setup(); render(<SiteNav />); const nav = screen.getByRole('navigation', { name: portfolio.navigationLabel }); const links = within(nav).getAllByRole('link'); const brand = screen.getByRole('link', { name: `${portfolio.hero.name} - ${portfolio.navigation[0].label}` }); await user.tab(); expect(brand).toHaveFocus(); await user.tab(); expect(links[0]).toHaveFocus(); await user.tab(); expect(links[1]).toHaveFocus(); });
+  it('renders all route screens', () => { const home = render(<HomePage />); expect(screen.getByRole('heading', { name: portfolio.introduction.heading })).toBeInTheDocument(); home.unmount(); const projects = render(<ProjectsPage />); expect(screen.getByRole('heading', { name: portfolio.projects.heading })).toBeInTheDocument(); projects.unmount(); const skills = render(<SkillsPage />); expect(screen.getByRole('heading', { name: portfolio.skills.heading })).toBeInTheDocument(); skills.unmount(); render(<ContactPage />); expect(screen.getByRole('heading', { name: portfolio.contact.heading })).toBeInTheDocument(); });
+});
